@@ -7,6 +7,18 @@ class Usuario{
 	private $dessenha;
 	private $dtcadastro;
 
+	
+	/*
+	  Colocando aspas nos parametros do construtor, ele pode receber vazio caso não
+	  sejam preenchidos, pois não é em todo o caso que tu precisa colocar os parametros ao criar o objeto.	
+    */
+	public function __construct($login = "", $password = ""){
+
+		$this->setDeslogin($login);
+		$this->setDessenha($password);
+
+	}
+
 	public function getIdusuario(){
 		return $this->idusuario;
 	}
@@ -48,18 +60,13 @@ class Usuario{
 
 		if (count($result) > 0){
 
-			$row = $result[0];
+			$this->setData($result[0]);
 
-			$this->setIdusuario($row['idusuario']);
-			$this->setDeslogin($row['deslogin']);
-			$this->setDessenha($row['dessenha']);
-			$this->setDtcadastro(new DateTime($row['dtcadastro']));
 		}
 	}
-
 	/*
-		Como não utilizamos o $this, esse método fica STATIC, na prática a vantagem é que
-		não precisamos instanciar o objeto para chamá-lo, apenas usar o USUARIO::NOMEMETODO
+	  Como não utilizamos o $this, esse método fica STATIC, na prática a vantagem é que
+	  não precisamos instanciar o objeto para chamá-lo, apenas usar o USUARIO::NOMEMETODO
 	*/
 	public static function getList(){
 
@@ -83,17 +90,45 @@ class Usuario{
 										 ":PASSWORD"=>$password));
 		if (count($results) > 0) {
 
-			$row = $results[0];
-
-			$this->setIdusuario($row['idusuario']);
-			$this->setDeslogin($row['deslogin']);
-			$this->setDessenha($row['dessenha']);
-			$this->setDtcadastro(new DateTime($row['dtcadastro']));
+			$this->setData($results[0]);
 
 		} else {
 
 			throw new Exception("Login e/ou Senha inválidos!Verifique!");
 		}
+	}
+
+	public function setData($data){
+		$this->setIdusuario($data['idusuario']);
+		$this->setDeslogin($data['deslogin']);
+		$this->setDessenha($data['dessenha']);
+		$this->setDtcadastro(new DateTime($data['dtcadastro']));
+	}
+
+	public function insert(){
+
+		$sql = new Sql();
+		$results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)",array(
+			'LOGIN'=>$this->getDeslogin(),
+			'PASSWORD'=>$this->getDessenha()
+	        ));
+
+		if (count($results) > 0){
+			$this->setData($results[0]);	
+		}
+	}
+
+	public function update($login, $password){
+
+		$this->setDeslogin($login);
+		$this->setDessenha($password);
+
+		$sql = new Sql();
+		$sql->query("UPDATE TB_USUARIOS SET DESLOGIN = :LOGIN, DESSENHA = :PASSWORD           		   WHERE IDUSUARIO = :ID", array(
+			         'LOGIN'=>$this->getDeslogin(),
+			         'PASSWORD'=>$this->getDessenha(),
+			         'ID'=>$this->getIdusuario()
+		));
 	}
 
 	public function __toString(){

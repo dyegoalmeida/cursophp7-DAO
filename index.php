@@ -2,19 +2,26 @@
 
 	require_once("config.php");
 
-	//$date = new DateTime('2020-04-30 13:21:12');
-	//echo $date->format('d/m/Y H:i:s');
-
+    $usuario = new Usuario();
+    $usuario->loadbyID(15);
+    $usuario->update("professor","123456789");
+	echo $usuario;
+    
+    /*
+    $aluno = new Usuario("aluno653","98!lun0");
+    $aluno->insert();
+    echo $aluno;
+    */
+    /*
 	$login = new Usuario();
 	$login->login("valter","0800963");
 
 	echo $login;
-
+    */
 	/*
-	$busca = Usuario::search("dy");
+	$busca = Usuario::search("alun");
 	echo json_encode($busca);
     */
-
 	/*
 	$lista = Usuario::getList();
 	echo json_encode($lista);
