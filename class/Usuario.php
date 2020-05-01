@@ -131,6 +131,22 @@ class Usuario{
 		));
 	}
 
+	public function delete(){
+
+		$sql = new Sql();
+
+		$sql->query("DELETE FROM TB_USUARIOS WHERE IDUSUARIO = :ID", array(
+			'ID'=>$this->getIdusuario()
+		));
+		/*
+		  Como apagamos o registro, ele não existindo mais vamos zerar o objeto, passando vazios para os sets(); 
+		*/
+		$this->setIdusuario(0);
+		$this->setDeslogin("");
+		$this->setDessenha("");
+		$this->setDtcadastro(new DateTime());  
+	}
+
 	public function __toString(){
         
 		return json_encode(array(
